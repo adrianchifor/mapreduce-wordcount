@@ -1,36 +1,36 @@
 package iterator
 
 import (
-	"bufio"
-	"io"
-	"os"
+    "bufio"
+    "io"
+    "os"
 )
 
 
 func line(filename string) chan string {
-	output := make(chan string)
+    output := make(chan string)
 
-	go func() {
-		file, err := os.Open(filename)
+    go func() {
+        file, err := os.Open(filename)
 
-		if err != nil {
-			return
-		}
+        if err != nil {
+            return
+        }
 
-		defer file.Close()
-		reader := bufio.NewReader(file)
+        defer file.Close()
+        reader := bufio.NewReader(file)
 
-		for {
-			line, err := reader.ReadString('\n')
-			output <- line
+        for {
+            line, err := reader.ReadString('\n')
+            output <- line
 
-			if err == io.EOF {
-				break
-			}
-		}
+            if err == io.EOF {
+                break
+            }
+        }
 
-		close(output)
-	}()
+        close(output)
+    }()
 
-	return output
+    return output
 }
