@@ -47,19 +47,22 @@ brisk hadoop jar /root/brisk/WordCount.jar WordCount
  */
 public class WordCount extends Configured implements Tool {
 
-    public static class MapperClass extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable> {
+    public static class MapperClass extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>,
+    	Text, IntWritable> {
+    		
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
         private ByteBuffer sourceColumn;
         
-        String punctuations[] = { "\"", "'", ",", ";", "!", ":", "\\?", "\\.", "\\(", "\\-", "\\[", "\\)", "\\]" };
+        String punctuations[] = { "\"", "'", ",", ";", "!", ":", "\\?",
+        	"\\.", "\\(", "\\-", "\\[", "\\)", "\\]" };
 
         protected void setup(Mapper.Context context) throws IOException, InterruptedException {
             sourceColumn = ByteBufferUtil.bytes(context.getConfiguration().get("columnname"));         
         }
 
-        public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, 
-                        InterruptedException {   
+        public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) 
+    		throws IOException, InterruptedException {   
                               
             // Fetch columns
             IColumn column = columns.get(sourceColumn);
@@ -67,13 +70,11 @@ public class WordCount extends Configured implements Tool {
             if (column == null)
                 return;
 
-            String value = ByteBufferUtil.string(column.value());
-            
-            value = value.toLowerCase();
+            String value = ByteBufferUtil.string(column.value()).toLowerCase();
 
             // We replace punctuations with empty string
             for (String pattern : punctuations) {
-              value = value.replaceAll(pattern, "");
+            	value = value.replaceAll(pattern, "");
             }            
 
             StringTokenizer itr = new StringTokenizer(value);
@@ -92,13 +93,12 @@ public class WordCount extends Configured implements Tool {
             outputKey = ByteBufferUtil.bytes(context.getConfiguration().get("columnname"));
         }
 
-        public void reduce(Text word, Iterable<IntWritable> values, Context context) throws IOException, 
-                           InterruptedException {
+        public void reduce(Text word, Iterable<IntWritable> values, Context context) 
+        	throws IOException, InterruptedException {
+        		
             int sum = 0;
-
-            for (IntWritable val : values) {
+            for (IntWritable val : values)
                 sum += val.get();
-            }
 
             context.write(outputKey, Collections.singletonList(getMutation(word, sum)));
         }
@@ -148,7 +148,8 @@ public class WordCount extends Configured implements Tool {
         ConfigHelper.setPartitioner(job.getConfiguration(), "org.apache.cassandra.dht.RandomPartitioner");
       
         // Set the predicate that determines what columns will be selected from each row
-        SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        SlicePredicate predicate = new SlicePredicate().setColumn_names(
+        	Arrays.asList(ByteBufferUtil.bytes(columnName)));
 
         // Each row will be handled by one Map job
         ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
