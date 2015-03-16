@@ -6,7 +6,6 @@ import (
     "os"
 )
 
-
 func line(filename string) chan string {
     output := make(chan string)
 
