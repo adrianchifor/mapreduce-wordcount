@@ -1,6 +1,5 @@
 package mapreduce
 
-
 func MapReduce(mapper func(interface{}, chan interface{}),
                reducer func(chan interface{}, chan interface{}),
                input chan interface{},
@@ -23,9 +22,7 @@ func MapReduce(mapper func(interface{}, chan interface{}),
     go func() {
         for item := range input {
             my_chan := make(chan interface{})
-
             go mapper(item, my_chan)
-
             worker_output <- my_chan
         }
 
