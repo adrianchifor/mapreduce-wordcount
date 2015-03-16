@@ -8,7 +8,6 @@ import (
     "regexp"
 )
 
-
 func find_files(dirname string) chan interface{} {
     output := make(chan interface{})
 
@@ -20,7 +19,6 @@ func find_files(dirname string) chan interface{} {
     return output
 }
 
-
 func _find_files(dirname string, output chan interface{}) {
     dir, _ := os.Open(dirname)
     dirnames, _ := dir.Readdirnames(-1)
@@ -31,14 +29,11 @@ func _find_files(dirname string, output chan interface{}) {
 
         if file.IsDir() {
             _find_files(fullpath, output)
-        } 
-
-        else {
+        } else {
             output <- fullpath
         }
     }
 }
-
 
 func word_count(filename interface{}, output chan interface{}) {
     results := map[string]int{}
@@ -52,7 +47,6 @@ func word_count(filename interface{}, output chan interface{}) {
 
     output <- results
 }
-
 
 func reducer(input chan interface{}, output chan interface{}) {
     results := map[string]int{}
@@ -71,7 +65,6 @@ func reducer(input chan interface{}, output chan interface{}) {
 
     output <- results
 }
-
 
 func main() {
     fmt.Print(mapreduce.MapReduce(word_count, reducer, find_files("."), 20))
